@@ -273,7 +273,9 @@ module.exports = function () {
         _options$onBoundingBo = options.onBoundingBoxInitialized,
         onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
         _options$containerEl = options.containerEl,
-        containerEl = _options$containerEl === undefined ? null : _options$containerEl;
+        containerEl = _options$containerEl === undefined ? null : _options$containerEl,
+        _options$customLoader = options.customLoader,
+        customLoader = _options$customLoader === undefined ? null : _options$customLoader;
 
     if (inlinePane !== true && !(0, _dom.isDOMElement)(paneContainer)) {
       throw new TypeError('`paneContainer` must be a DOM element when `inlinePane !== true`');
@@ -303,7 +305,8 @@ module.exports = function () {
       touchBoundingBox: touchBoundingBox,
       customBoundingBox: customBoundingBox,
       onBoundingBoxInitialized: onBoundingBoxInitialized,
-      containerEl: containerEl
+      containerEl: containerEl,
+      customLoader: customLoader
     };
 
     if (this.settings.injectBaseStyles) {
@@ -326,7 +329,8 @@ module.exports = function () {
         namespace: this.settings.namespace,
         inlineOffsetX: this.settings.inlineOffsetX,
         inlineOffsetY: this.settings.inlineOffsetY,
-        inlineContainer: this.settings.inlineContainer
+        inlineContainer: this.settings.inlineContainer,
+        customLoader: this.settings.customLoader
       });
     }
   }, {
@@ -730,9 +734,22 @@ var ZoomPane = function () {
         _options$inlineOffset2 = options.inlineOffsetY,
         inlineOffsetY = _options$inlineOffset2 === undefined ? 0 : _options$inlineOffset2,
         _options$inlineContai = options.inlineContainer,
-        inlineContainer = _options$inlineContai === undefined ? document.body : _options$inlineContai;
+        inlineContainer = _options$inlineContai === undefined ? document.body : _options$inlineContai,
+        _options$customLoader = options.customLoader,
+        customLoader = _options$customLoader === undefined ? null : _options$customLoader;
 
-    this.settings = { container: container, zoomFactor: zoomFactor, inline: inline, namespace: namespace, showWhitespaceAtEdges: showWhitespaceAtEdges, containInline: containInline, inlineOffsetX: inlineOffsetX, inlineOffsetY: inlineOffsetY, inlineContainer: inlineContainer };
+    this.settings = {
+      container: container,
+      zoomFactor: zoomFactor,
+      inline: inline,
+      namespace: namespace,
+      showWhitespaceAtEdges: showWhitespaceAtEdges,
+      containInline: containInline,
+      inlineOffsetX: inlineOffsetX,
+      inlineOffsetY: inlineOffsetY,
+      inlineContainer: inlineContainer,
+      customLoader: customLoader
+    };
 
     this.openClasses = this._buildClasses('open');
     this.openingClasses = this._buildClasses('opening');
@@ -763,6 +780,11 @@ var ZoomPane = function () {
 
       var loaderEl = document.createElement('div');
       (0, _dom.addClasses)(loaderEl, this._buildClasses('zoom-pane-loader'));
+
+      if (this.settings.customLoader) {
+        loaderEl.innerHTML = this.settings.customLoader;
+      }
+
       this.el.appendChild(loaderEl);
 
       this.imgEl = document.createElement('img');
@@ -921,7 +943,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = injectBaseStylesheet;
-var RULES = '\n@keyframes noop {\n  0% { zoom: 1; }\n}\n\n@-webkit-keyframes noop {\n  0% { zoom: 1; }\n}\n\n.drift-zoom-pane.drift-open {\n  display: block;\n}\n\n.drift-zoom-pane.drift-opening, .drift-zoom-pane.drift-closing {\n  animation: noop 1ms;\n  -webkit-animation: noop 1ms;\n}\n\n.drift-zoom-pane {\n  position: absolute;\n  overflow: hidden;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  pointer-events: none;\n}\n\n.drift-zoom-pane-loader {\n  display: none;\n}\n\n.drift-zoom-pane img {\n  position: absolute;\n  display: block;\n  max-width: none;\n  max-height: none;\n}\n\n.drift-bounding-box {\n  position: absolute;\n  pointer-events: none;\n}\n';
+var RULES = '\n@keyframes noop {\n  0% { zoom: 1; }\n}\n\n@-webkit-keyframes noop {\n  0% { zoom: 1; }\n}\n\n.drift-zoom-pane.drift-open {\n  display: block;\n}\n\n.drift-zoom-pane.drift-opening, .drift-zoom-pane.drift-closing {\n  animation: noop 1ms;\n  -webkit-animation: noop 1ms;\n}\n\n.drift-zoom-pane {\n  position: absolute;\n  overflow: hidden;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  pointer-events: none;\n}\n\n.drift-zoom-pane-loader,\n.drift-custom-zoom-pane-loader {\n  display: none;\n}\n\n.drift-zoom-pane img {\n  position: absolute;\n  display: block;\n  max-width: none;\n  max-height: none;\n}\n\n.drift-bounding-box {\n  position: absolute;\n  pointer-events: none;\n}\n';
 
 function injectBaseStylesheet() {
   if (document.querySelector('.drift-base-styles')) {

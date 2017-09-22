@@ -22,10 +22,22 @@ export default class ZoomPane {
       containInline = throwIfMissing(),
       inlineOffsetX = 0,
       inlineOffsetY = 0,
-      inlineContainer = document.body
+      inlineContainer = document.body,
+      customLoader = null
     } = options;
 
-    this.settings = { container, zoomFactor, inline, namespace, showWhitespaceAtEdges, containInline, inlineOffsetX, inlineOffsetY, inlineContainer };
+    this.settings = {
+      container,
+      zoomFactor,
+      inline,
+      namespace,
+      showWhitespaceAtEdges,
+      containInline,
+      inlineOffsetX,
+      inlineOffsetY,
+      inlineContainer,
+      customLoader
+    };
 
     this.openClasses = this._buildClasses('open');
     this.openingClasses = this._buildClasses('opening');
@@ -53,6 +65,11 @@ export default class ZoomPane {
 
     let loaderEl = document.createElement('div');
     addClasses(loaderEl, this._buildClasses('zoom-pane-loader'));
+
+    if (this.settings.customLoader) {
+      loaderEl.innerHTML = this.settings.customLoader;
+    }
+
     this.el.appendChild(loaderEl);
 
     this.imgEl = document.createElement('img');

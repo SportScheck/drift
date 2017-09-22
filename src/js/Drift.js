@@ -79,6 +79,8 @@ module.exports = class Drift {
       onBoundingBoxInitialized = null,
       // If present this element will be used instead of the triggerEl
       containerEl = null,
+      // If present this element will be displayed on loading
+      customLoader = null
     } = options;
 
     if (inlinePane !== true && !isDOMElement(paneContainer)) {
@@ -109,7 +111,8 @@ module.exports = class Drift {
       touchBoundingBox,
       customBoundingBox,
       onBoundingBoxInitialized,
-      containerEl
+      containerEl,
+      customLoader
      };
 
     if (this.settings.injectBaseStyles) {
@@ -143,7 +146,8 @@ module.exports = class Drift {
       namespace: this.settings.namespace,
       inlineOffsetX: this.settings.inlineOffsetX,
       inlineOffsetY: this.settings.inlineOffsetY,
-      inlineContainer: this.settings.inlineContainer
+      inlineContainer: this.settings.inlineContainer,
+      customLoader: this.settings.customLoader
     });
   }
 

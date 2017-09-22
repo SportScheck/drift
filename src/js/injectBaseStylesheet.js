@@ -26,7 +26,8 @@ const RULES = `
   pointer-events: none;
 }
 
-.drift-zoom-pane-loader {
+.drift-zoom-pane-loader,
+.drift-custom-zoom-pane-loader {
   display: none;
 }
 
