@@ -16,15 +16,36 @@ export default class Trigger {
       touchBoundingBox = throwIfMissing(),
       namespace = null,
       zoomFactor = throwIfMissing(),
+      customBoundingBox = null,
+      onBoundingBoxInitialized = null,
+      containerEl = null
     } = options;
 
-    this.settings = { el, zoomPane, sourceAttribute, handleTouch, onShow, onHide, hoverDelay, touchDelay, hoverBoundingBox, touchBoundingBox, namespace, zoomFactor };
+    this.settings = {
+      el,
+      zoomPane,
+      sourceAttribute,
+      handleTouch,
+      onShow,
+      onHide,
+      hoverDelay,
+      touchDelay,
+      hoverBoundingBox,
+      touchBoundingBox,
+      namespace,
+      zoomFactor,
+      customBoundingBox,
+      onBoundingBoxInitialized,
+      containerEl
+    };
 
     if (this.settings.hoverBoundingBox || this.settings.touchBoundingBox) {
       this.boundingBox = new BoundingBox({
         namespace: this.settings.namespace,
         zoomFactor: this.settings.zoomFactor,
-        containerEl: this.settings.el.offsetParent,
+        containerEl: this.settings.containerEl === undefined ? this.settings.el.offsetParent : this.settings.containerEl,
+        customBoundingBox: this.settings.customBoundingBox,
+        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized
       });
     }
 
@@ -156,9 +177,15 @@ export default class Trigger {
     let percentageOffsetX = offsetX / this.settings.el.clientWidth;
     let percentageOffsetY = offsetY / this.settings.el.clientHeight;
 
+    let rectParent = this.settings.containerEl === undefined ? null : el.offsetParent.getBoundingClientRect();
+    let rectExtended = {
+      rect,
+      rectParent
+    }
+
     if (this.boundingBox) {
       this.boundingBox.setPosition(percentageOffsetX,
-        percentageOffsetY, rect);
+        percentageOffsetY, rectExtended);
     }
 
     this.settings.zoomPane.setPosition(percentageOffsetX,

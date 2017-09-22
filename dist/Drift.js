@@ -42,9 +42,19 @@ var BoundingBox = function () {
         _options$zoomFactor = options.zoomFactor,
         zoomFactor = _options$zoomFactor === undefined ? (0, _throwIfMissing2.default)() : _options$zoomFactor,
         _options$containerEl = options.containerEl,
-        containerEl = _options$containerEl === undefined ? (0, _throwIfMissing2.default)() : _options$containerEl;
+        containerEl = _options$containerEl === undefined ? (0, _throwIfMissing2.default)() : _options$containerEl,
+        _options$customBoundi = options.customBoundingBox,
+        customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
+        _options$onBoundingBo = options.onBoundingBoxInitialized,
+        onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo;
 
-    this.settings = { namespace: namespace, zoomFactor: zoomFactor, containerEl: containerEl };
+    this.settings = {
+      namespace: namespace,
+      zoomFactor: zoomFactor,
+      containerEl: containerEl,
+      customBoundingBox: customBoundingBox,
+      onBoundingBoxInitialized: onBoundingBoxInitialized
+    };
 
     this.openClasses = this._buildClasses('open');
 
@@ -68,13 +78,23 @@ var BoundingBox = function () {
     value: function _buildElement() {
       this.el = document.createElement('div');
       (0, _dom.addClasses)(this.el, this._buildClasses('bounding-box'));
+
+      if (this.settings.customBoundingBox) {
+        this.el.innerHTML = this.settings.customBoundingBox;
+      }
+
+      if (this.settings.onBoundingBoxInitialized) {
+        this.settings.onBoundingBoxInitialized(this.el);
+      }
     }
   }, {
     key: 'show',
     value: function show(zoomPaneWidth, zoomPaneHeight) {
       this.isShowing = true;
 
-      this.settings.containerEl.appendChild(this.el);
+      if (this.settings.containerEl) {
+        this.settings.containerEl.appendChild(this.el);
+      }
 
       var style = this.el.style;
       style.width = Math.round(zoomPaneWidth / this.settings.zoomFactor) + 'px';
@@ -85,7 +105,7 @@ var BoundingBox = function () {
   }, {
     key: 'hide',
     value: function hide() {
-      if (this.isShowing) {
+      if (this.isShowing && this.settings.containerEl) {
         this.settings.containerEl.removeChild(this.el);
       }
 
@@ -96,24 +116,50 @@ var BoundingBox = function () {
   }, {
     key: 'setPosition',
     value: function setPosition(percentageOffsetX, percentageOffsetY, triggerRect) {
-      var pageXOffset = window.pageXOffset;
-      var pageYOffset = window.pageYOffset;
+      var inlineLeft = void 0,
+          inlineTop = void 0;
 
-      var inlineLeft = triggerRect.left + percentageOffsetX * triggerRect.width - this.el.clientWidth / 2 + pageXOffset;
-      var inlineTop = triggerRect.top + percentageOffsetY * triggerRect.height - this.el.clientHeight / 2 + pageYOffset;
+      var relativePage = triggerRect.rectParent === undefined;
 
-      var elRect = this.el.getBoundingClientRect();
+      if (relativePage) {
+        var pageXOffset = window.pageXOffset;
+        var pageYOffset = window.pageYOffset;
 
-      if (inlineLeft < triggerRect.left + pageXOffset) {
-        inlineLeft = triggerRect.left + pageXOffset;
-      } else if (inlineLeft + this.el.clientWidth > triggerRect.left + triggerRect.width + pageXOffset) {
-        inlineLeft = triggerRect.left + triggerRect.width - this.el.clientWidth + pageXOffset;
-      }
+        inlineLeft = triggerRect.rect.left + percentageOffsetX * triggerRect.rect.width - this.el.clientWidth / 2 + pageXOffset;
+        inlineTop = triggerRect.rect.top + percentageOffsetY * triggerRect.rect.height - this.el.clientHeight / 2 + pageYOffset;
 
-      if (inlineTop < triggerRect.top + pageYOffset) {
-        inlineTop = triggerRect.top + pageYOffset;
-      } else if (inlineTop + this.el.clientHeight > triggerRect.top + triggerRect.height + pageYOffset) {
-        inlineTop = triggerRect.top + triggerRect.height - this.el.clientHeight + pageYOffset;
+        if (inlineLeft < triggerRect.rect.left + pageXOffset) {
+          inlineLeft = triggerRect.rect.left + pageXOffset;
+        } else if (inlineLeft + this.el.clientWidth > triggerRect.rect.left + triggerRect.rect.width + pageXOffset) {
+          inlineLeft = triggerRect.rect.left + triggerRect.rect.width - this.el.clientWidth + pageXOffset;
+        }
+
+        if (inlineTop < triggerRect.rect.top + pageYOffset) {
+          inlineTop = triggerRect.rect.top + pageYOffset;
+        } else if (inlineTop + this.el.clientHeight > triggerRect.rect.top + triggerRect.rect.height + pageYOffset) {
+          inlineTop = triggerRect.rect.top + triggerRect.rect.height - this.el.clientHeight + pageYOffset;
+        }
+      } else {
+        var parentXOffset = (triggerRect.rectParent.width - triggerRect.rect.width) / 2;
+        var parentYOffset = (triggerRect.rectParent.height - triggerRect.rect.height) / 2;
+
+        inlineLeft = percentageOffsetX * triggerRect.rect.width - this.el.clientWidth / 2;
+        inlineTop = percentageOffsetY * triggerRect.rect.height - this.el.clientHeight / 2;
+
+        if (inlineLeft < 0) {
+          inlineLeft = 0;
+        } else if (inlineLeft + this.el.clientWidth > triggerRect.rect.width) {
+          inlineLeft = triggerRect.rect.width - this.el.clientWidth;
+        }
+
+        if (inlineTop < 0) {
+          inlineTop = 0;
+        } else if (inlineTop + this.el.clientHeight > triggerRect.rect.height) {
+          inlineTop = triggerRect.rect.height - this.el.clientHeight;
+        }
+
+        inlineLeft += parentXOffset;
+        inlineTop += parentYOffset;
       }
 
       this.el.style.left = inlineLeft + 'px';
@@ -221,7 +267,13 @@ module.exports = function () {
         _options$hoverBoundin = options.hoverBoundingBox,
         hoverBoundingBox = _options$hoverBoundin === undefined ? false : _options$hoverBoundin,
         _options$touchBoundin = options.touchBoundingBox,
-        touchBoundingBox = _options$touchBoundin === undefined ? false : _options$touchBoundin;
+        touchBoundingBox = _options$touchBoundin === undefined ? false : _options$touchBoundin,
+        _options$customBoundi = options.customBoundingBox,
+        customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
+        _options$onBoundingBo = options.onBoundingBoxInitialized,
+        onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
+        _options$containerEl = options.containerEl,
+        containerEl = _options$containerEl === undefined ? null : _options$containerEl;
 
     if (inlinePane !== true && !(0, _dom.isDOMElement)(paneContainer)) {
       throw new TypeError('`paneContainer` must be a DOM element when `inlinePane !== true`');
@@ -230,7 +282,29 @@ module.exports = function () {
       throw new TypeError('`inlineContainer` must be a DOM element');
     }
 
-    this.settings = { namespace: namespace, showWhitespaceAtEdges: showWhitespaceAtEdges, containInline: containInline, inlineOffsetX: inlineOffsetX, inlineOffsetY: inlineOffsetY, inlineContainer: inlineContainer, sourceAttribute: sourceAttribute, zoomFactor: zoomFactor, paneContainer: paneContainer, inlinePane: inlinePane, handleTouch: handleTouch, onShow: onShow, onHide: onHide, injectBaseStyles: injectBaseStyles, hoverDelay: hoverDelay, touchDelay: touchDelay, hoverBoundingBox: hoverBoundingBox, touchBoundingBox: touchBoundingBox };
+    this.settings = {
+      namespace: namespace,
+      showWhitespaceAtEdges: showWhitespaceAtEdges,
+      containInline: containInline,
+      inlineOffsetX: inlineOffsetX,
+      inlineOffsetY: inlineOffsetY,
+      inlineContainer: inlineContainer,
+      sourceAttribute: sourceAttribute,
+      zoomFactor: zoomFactor,
+      paneContainer: paneContainer,
+      inlinePane: inlinePane,
+      handleTouch: handleTouch,
+      onShow: onShow,
+      onHide: onHide,
+      injectBaseStyles: injectBaseStyles,
+      hoverDelay: hoverDelay,
+      touchDelay: touchDelay,
+      hoverBoundingBox: hoverBoundingBox,
+      touchBoundingBox: touchBoundingBox,
+      customBoundingBox: customBoundingBox,
+      onBoundingBoxInitialized: onBoundingBoxInitialized,
+      containerEl: containerEl
+    };
 
     if (this.settings.injectBaseStyles) {
       (0, _injectBaseStylesheet2.default)();
@@ -270,7 +344,10 @@ module.exports = function () {
         hoverBoundingBox: this.settings.hoverBoundingBox,
         touchBoundingBox: this.settings.touchBoundingBox,
         namespace: this.settings.namespace,
-        zoomFactor: this.settings.zoomFactor
+        zoomFactor: this.settings.zoomFactor,
+        customBoundingBox: this.settings.customBoundingBox,
+        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+        containerEl: this.settings.containerEl
       });
     }
   }, {
@@ -373,15 +450,39 @@ var Trigger = function () {
         _options$namespace = options.namespace,
         namespace = _options$namespace === undefined ? null : _options$namespace,
         _options$zoomFactor = options.zoomFactor,
-        zoomFactor = _options$zoomFactor === undefined ? (0, _throwIfMissing2.default)() : _options$zoomFactor;
+        zoomFactor = _options$zoomFactor === undefined ? (0, _throwIfMissing2.default)() : _options$zoomFactor,
+        _options$customBoundi = options.customBoundingBox,
+        customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
+        _options$onBoundingBo = options.onBoundingBoxInitialized,
+        onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
+        _options$containerEl = options.containerEl,
+        containerEl = _options$containerEl === undefined ? null : _options$containerEl;
 
-    this.settings = { el: el, zoomPane: zoomPane, sourceAttribute: sourceAttribute, handleTouch: handleTouch, onShow: onShow, onHide: onHide, hoverDelay: hoverDelay, touchDelay: touchDelay, hoverBoundingBox: hoverBoundingBox, touchBoundingBox: touchBoundingBox, namespace: namespace, zoomFactor: zoomFactor };
+    this.settings = {
+      el: el,
+      zoomPane: zoomPane,
+      sourceAttribute: sourceAttribute,
+      handleTouch: handleTouch,
+      onShow: onShow,
+      onHide: onHide,
+      hoverDelay: hoverDelay,
+      touchDelay: touchDelay,
+      hoverBoundingBox: hoverBoundingBox,
+      touchBoundingBox: touchBoundingBox,
+      namespace: namespace,
+      zoomFactor: zoomFactor,
+      customBoundingBox: customBoundingBox,
+      onBoundingBoxInitialized: onBoundingBoxInitialized,
+      containerEl: containerEl
+    };
 
     if (this.settings.hoverBoundingBox || this.settings.touchBoundingBox) {
       this.boundingBox = new _BoundingBox2.default({
         namespace: this.settings.namespace,
         zoomFactor: this.settings.zoomFactor,
-        containerEl: this.settings.el.offsetParent
+        containerEl: this.settings.containerEl === undefined ? this.settings.el.offsetParent : this.settings.containerEl,
+        customBoundingBox: this.settings.customBoundingBox,
+        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized
       });
     }
 
@@ -515,8 +616,14 @@ var _initialiseProps = function _initialiseProps() {
     var percentageOffsetX = offsetX / _this.settings.el.clientWidth;
     var percentageOffsetY = offsetY / _this.settings.el.clientHeight;
 
+    var rectParent = _this.settings.containerEl === undefined ? null : el.offsetParent.getBoundingClientRect();
+    var rectExtended = {
+      rect: rect,
+      rectParent: rectParent
+    };
+
     if (_this.boundingBox) {
-      _this.boundingBox.setPosition(percentageOffsetX, percentageOffsetY, rect);
+      _this.boundingBox.setPosition(percentageOffsetX, percentageOffsetY, rectExtended);
     }
 
     _this.settings.zoomPane.setPosition(percentageOffsetX, percentageOffsetY, rect);

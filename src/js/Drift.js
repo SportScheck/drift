@@ -71,6 +71,14 @@ module.exports = class Drift {
       // If true, a bounding box will show the area currently being previewed
       // during touch events
       touchBoundingBox = false,
+      // If present this will be appendend to the zoom pane.
+      customBoundingBox = null,
+      // If present (and a function), this will be called
+      // when the Boundingbox is initalized (this function
+      // takes the bounding box element as parameter)
+      onBoundingBoxInitialized = null,
+      // If present this element will be used instead of the triggerEl
+      containerEl = null,
     } = options;
 
     if (inlinePane !== true && !isDOMElement(paneContainer)) {
@@ -80,7 +88,29 @@ module.exports = class Drift {
       throw new TypeError('`inlineContainer` must be a DOM element');
     }
 
-    this.settings = { namespace, showWhitespaceAtEdges, containInline, inlineOffsetX, inlineOffsetY, inlineContainer, sourceAttribute, zoomFactor, paneContainer, inlinePane, handleTouch, onShow, onHide, injectBaseStyles, hoverDelay, touchDelay, hoverBoundingBox, touchBoundingBox };
+    this.settings = {
+      namespace,
+      showWhitespaceAtEdges,
+      containInline,
+      inlineOffsetX,
+      inlineOffsetY,
+      inlineContainer,
+      sourceAttribute,
+      zoomFactor,
+      paneContainer,
+      inlinePane,
+      handleTouch,
+      onShow,
+      onHide,
+      injectBaseStyles,
+      hoverDelay,
+      touchDelay,
+      hoverBoundingBox,
+      touchBoundingBox,
+      customBoundingBox,
+      onBoundingBoxInitialized,
+      containerEl
+     };
 
     if (this.settings.injectBaseStyles) {
       injectBaseStylesheet();
@@ -131,6 +161,9 @@ module.exports = class Drift {
       touchBoundingBox: this.settings.touchBoundingBox,
       namespace: this.settings.namespace,
       zoomFactor: this.settings.zoomFactor,
+      customBoundingBox: this.settings.customBoundingBox,
+      onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+      containerEl: this.settings.containerEl
     });
   }
 
