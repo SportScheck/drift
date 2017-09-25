@@ -10,7 +10,8 @@ export default class BoundingBox {
       zoomFactor = throwIfMissing(),
       containerEl = throwIfMissing(),
       customBoundingBox = null,
-      onBoundingBoxInitialized = null
+      onBoundingBoxInitialized = null,
+      onBoundingBoxShow = null
     } = options;
 
     this.settings = {
@@ -18,7 +19,8 @@ export default class BoundingBox {
       zoomFactor,
       containerEl,
       customBoundingBox,
-      onBoundingBoxInitialized
+      onBoundingBoxInitialized,
+      onBoundingBoxShow
     };
 
     this.openClasses = this._buildClasses('open');
@@ -55,6 +57,10 @@ export default class BoundingBox {
 
     if (this.settings.containerEl) {
       this.settings.containerEl.appendChild(this.el);
+    }
+
+    if (this.settings.onBoundingBoxShow) {
+      this.settings.onBoundingBoxShow(this.el);
     }
 
     let style = this.el.style;

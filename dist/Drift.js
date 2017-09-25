@@ -46,14 +46,17 @@ var BoundingBox = function () {
         _options$customBoundi = options.customBoundingBox,
         customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
         _options$onBoundingBo = options.onBoundingBoxInitialized,
-        onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo;
+        onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
+        _options$onBoundingBo2 = options.onBoundingBoxShow,
+        onBoundingBoxShow = _options$onBoundingBo2 === undefined ? null : _options$onBoundingBo2;
 
     this.settings = {
       namespace: namespace,
       zoomFactor: zoomFactor,
       containerEl: containerEl,
       customBoundingBox: customBoundingBox,
-      onBoundingBoxInitialized: onBoundingBoxInitialized
+      onBoundingBoxInitialized: onBoundingBoxInitialized,
+      onBoundingBoxShow: onBoundingBoxShow
     };
 
     this.openClasses = this._buildClasses('open');
@@ -94,6 +97,10 @@ var BoundingBox = function () {
 
       if (this.settings.containerEl) {
         this.settings.containerEl.appendChild(this.el);
+      }
+
+      if (this.settings.onBoundingBoxShow) {
+        this.settings.onBoundingBoxShow(this.el);
       }
 
       var style = this.el.style;
@@ -272,6 +279,8 @@ module.exports = function () {
         customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
         _options$onBoundingBo = options.onBoundingBoxInitialized,
         onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
+        _options$onBoundingBo2 = options.onBoundingBoxShow,
+        onBoundingBoxShow = _options$onBoundingBo2 === undefined ? null : _options$onBoundingBo2,
         _options$containerEl = options.containerEl,
         containerEl = _options$containerEl === undefined ? null : _options$containerEl,
         _options$customLoader = options.customLoader,
@@ -305,6 +314,7 @@ module.exports = function () {
       touchBoundingBox: touchBoundingBox,
       customBoundingBox: customBoundingBox,
       onBoundingBoxInitialized: onBoundingBoxInitialized,
+      onBoundingBoxShow: onBoundingBoxShow,
       containerEl: containerEl,
       customLoader: customLoader
     };
@@ -351,6 +361,7 @@ module.exports = function () {
         zoomFactor: this.settings.zoomFactor,
         customBoundingBox: this.settings.customBoundingBox,
         onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+        onBoundingBoxShow: this.settings.onBoundingBoxShow,
         containerEl: this.settings.containerEl
       });
     }
@@ -459,6 +470,8 @@ var Trigger = function () {
         customBoundingBox = _options$customBoundi === undefined ? null : _options$customBoundi,
         _options$onBoundingBo = options.onBoundingBoxInitialized,
         onBoundingBoxInitialized = _options$onBoundingBo === undefined ? null : _options$onBoundingBo,
+        _options$onBoundingBo2 = options.onBoundingBoxShow,
+        onBoundingBoxShow = _options$onBoundingBo2 === undefined ? null : _options$onBoundingBo2,
         _options$containerEl = options.containerEl,
         containerEl = _options$containerEl === undefined ? null : _options$containerEl;
 
@@ -477,6 +490,7 @@ var Trigger = function () {
       zoomFactor: zoomFactor,
       customBoundingBox: customBoundingBox,
       onBoundingBoxInitialized: onBoundingBoxInitialized,
+      onBoundingBoxShow: onBoundingBoxShow,
       containerEl: containerEl
     };
 
@@ -486,7 +500,8 @@ var Trigger = function () {
         zoomFactor: this.settings.zoomFactor,
         containerEl: this.settings.containerEl === undefined ? this.settings.el.offsetParent : this.settings.containerEl,
         customBoundingBox: this.settings.customBoundingBox,
-        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized
+        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+        onBoundingBoxShow: this.settings.onBoundingBoxShow
       });
     }
 

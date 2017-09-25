@@ -18,6 +18,7 @@ export default class Trigger {
       zoomFactor = throwIfMissing(),
       customBoundingBox = null,
       onBoundingBoxInitialized = null,
+      onBoundingBoxShow = null,
       containerEl = null
     } = options;
 
@@ -36,6 +37,7 @@ export default class Trigger {
       zoomFactor,
       customBoundingBox,
       onBoundingBoxInitialized,
+      onBoundingBoxShow,
       containerEl
     };
 
@@ -45,7 +47,8 @@ export default class Trigger {
         zoomFactor: this.settings.zoomFactor,
         containerEl: this.settings.containerEl === undefined ? this.settings.el.offsetParent : this.settings.containerEl,
         customBoundingBox: this.settings.customBoundingBox,
-        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized
+        onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+        onBoundingBoxShow: this.settings.onBoundingBoxShow
       });
     }
 

@@ -77,6 +77,11 @@ module.exports = class Drift {
       // when the Boundingbox is initalized (this function
       // takes the bounding box element as parameter)
       onBoundingBoxInitialized = null,
+      // If present (and a function), this will be called
+      // when the Boundingbox is shown and the bounding box element
+      // is already appended to the dom (this function
+      // takes the bounding box element as parameter)
+      onBoundingBoxShow = null,
       // If present this element will be used instead of the triggerEl
       containerEl = null,
       // If present this element will be displayed on loading
@@ -111,6 +116,7 @@ module.exports = class Drift {
       touchBoundingBox,
       customBoundingBox,
       onBoundingBoxInitialized,
+      onBoundingBoxShow,
       containerEl,
       customLoader
      };
@@ -167,6 +173,7 @@ module.exports = class Drift {
       zoomFactor: this.settings.zoomFactor,
       customBoundingBox: this.settings.customBoundingBox,
       onBoundingBoxInitialized: this.settings.onBoundingBoxInitialized,
+      onBoundingBoxShow: this.settings.onBoundingBoxShow,
       containerEl: this.settings.containerEl
     });
   }
